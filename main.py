@@ -1,5 +1,11 @@
 from typing import Dict
 
+import json
+import socket
+import socket
+import multiprocessing
+import time
+
 
 class BackTracking:
     def __init__(self, k):
@@ -115,6 +121,7 @@ class Sensor(BackTracking):
         self.target = []
         self.suggestion_list = {}
         self.name = sensor_id
+        self.messenger = MessageManager()
 
         # create dictionary of neighbor , each has a list
         # that specifies the status of its own targets
@@ -242,6 +249,98 @@ class Sensor(BackTracking):
         return self.update_local_tree()
 
     # def sort_unassigned_variable_list(unassigned_variable_list ):
+# class message_manager:
+#     def __init__(self , buffer_size):
+#         self.buffer = {}
+#         self.buffer_size = buffer_size
+#
+#     def receive_message(self, sender_id , message):
+#         self.buffer[sender_id] = message
+#
+#     def get_message(self , sender_id):
+#         result = self.buffer.get(sender_id, [])
+#         self.clear_buffer(sender_id)
+#         return result
+#
+#     def clear_buffer(self , sender_id):
+#         self.buffer[sender_id] = None
+#
+#     def receiver(self):
+#         while True:
+#
+
+
+class MessageManager:
+    def __init__(self, my_port_tosend):
+        self.client_socket = None
+        self.server_socket = None
+        self.buffer = {}
+        self.my_port_tosend = my_port_tosend
+
+    def sending_message(self, message, host, port):
+        while True:
+            try:
+                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                client_socket.connect((host, port))
+                client_socket.send(message.encode())
+                client_socket.close()
+                break  # Exit the loop if message sent successfully
+            except ConnectionRefusedError:
+                print("Connection refused. Retrying in 1 second...")
+                time.sleep(1)
+
+    def receive_message(self, host, port):
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.bind((host, port))
+        server_socket.listen(1)
+        conn, addr = server_socket.accept()
+        while True:
+            conn, addr = server_socket.accept()
+            print(f"Got connection from {addr}")
+            message = conn.recv(1024).decode()
+            if not message:
+                continue  # Skip empty messages
+            print(f"Received message from client: {message}")
+            conn.close()
+        #
+        # while True:
+        #     print(f"Got connection from {addr}")
+        #     message = conn.recv(1024).decode()
+        #     if not message:
+        #         break
+        #     print(f"Received message from client: {message}")
+        # conn.close()
+    def start_receiving(self , port):
+        message = MessageManager(19002)
+        message.receive_message(socket.gethostname(), 19002)
+
+
+
+#
+# # after full day , intruduse you to message manager function !!!!!( still dont know its call function method or ...)
+#  # Start receiving message thread
+#     port1 = 19002
+#     message2 = MessageManager(19001)
+#
+#     proces1 = multiprocessing.Process(target=message2.start_receiving, args=(port1 , ))
+#     proces1.start()
+#     #   proces1.join()
+#     # thread_1 = threading.Thread(target=message2.receive_message,args=(socket.gethostname(), 19002))
+#     # thread_1.start()
+#     message = MessageManager(19001)
+#
+#     # Send message
+#     message.sending_message("hello", socket.gethostname(), 19002)
+#     time.sleep(3)
+#     message.sending_message("hello", socket.gethostname(), 19002)
+#     time.sleep(3)
+#     message.sending_message("hello", socket.gethostname(), 19002)
+#     time.sleep(3)
+#     message.sending_message("hello", socket.gethostname(), 19002)
+#     # message.sending_message("hello", socket.gethostname(), 19002)
+
+
+
 
 
 if __name__ == '__main__':
