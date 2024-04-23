@@ -5,21 +5,21 @@ import time
 
 
 class MessageManager:
-    def __init__(self, my_port_tosend):
+    def __init__(self, my_port_to_send):
         self.client_socket = None
         self.server_socket = None
         self.buffer = {}
-        self.my_port_tosend = my_port_tosend
+        self.my_port_tosend = my_port_to_send
 
     def sending_message(self, message, host, port):
         while True:
             try:
                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                #client_socket.bind((host , sel))
                 client_socket.connect((host, port))
-                hello = json.dumps(message)
-                client_socket.send(hello.encode())
+                client_socket.send(json.dumps(message).encode())
                 client_socket.close()
-                break  # Exit the loop if message sent successfully
+                break
             except ConnectionRefusedError:
                 print("Connection refused. Retrying in 1 second...")
                 time.sleep(1)
@@ -32,12 +32,13 @@ class MessageManager:
         while True:
             conn, addr = server_socket.accept()
             print(f"Got connection from {addr}")
-            message = conn.recv(1024).decode()
+            print("done")
+            message = conn.recv(2048).decode()
+            print (message)
             if not message:
                 continue  # Skip empty messages
-            #print(f"Received message from client: {message}")
-            hello = json.loads(message)
-            print(hello)
+            # print(f"Received message from client: {message}")
+            print(json.loads(message))
             conn.close()
         #
         # while True:
@@ -47,27 +48,32 @@ class MessageManager:
         #         break
         #     print(f"Received message from client: {message}")
         # conn.close()
-    def start_receiving(self , port):
-        message = MessageManager(19002)
-        message.receive_message(socket.gethostname(), 19002)
+
+    def start_receiving(self, port):
+        message = MessageManager(port)
+        message.receive_message(socket.gethostname(), port)
 
 
 if __name__ == '__main__':
-    port1 = 19002
+    port1 = 19001
     message2 = MessageManager(19001)
-    proces1 = multiprocessing.Process(target=message2.start_receiving, args=(port1 , ))
+    proces1 = multiprocessing.Process(target=message2.start_receiving, args=(port1,))
     proces1.start()
-    message = MessageManager(19001)
+    message = MessageManager(19002)
     # Send message
-    message.sending_message("hello", socket.gethostname(), 19002)
+    message.sending_message({1: "salam"}, socket.gethostname(), 19001)
+    time.sleep(1)
+    message.sending_message({1: "salam"}, socket.gethostname(), 19001)
     time.sleep(3)
-    message.sending_message("hello", socket.gethostname(), 19002)
-    time.sleep(3)
-    message.sending_message("hello", socket.gethostname(), 19002)
-    time.sleep(3)
-    message.sending_message("hello", socket.gethostname(), 19002)
+    port2 = 19002
+    process2 = multiprocessing.Process(target=message.start_receiving, args=(port2,))
+    process2.start()
+    message.sending_message({1: "salam"}, socket.gethostname(), 19002)
+    time.sleep(1)
+    message.sending_message({1: "salam"}, socket.gethostname(), 19002)    # message.sending_message("hello", socket.gethostname(), 19002)
+    # time.sleep(3)
     # message.sending_message("hello", socket.gethostname(), 19002)
-
+    # message.sending_message("hello", socket.gethostname(), 19002)
 
 # import json
 # import socket
