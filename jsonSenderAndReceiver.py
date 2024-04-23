@@ -1,6 +1,5 @@
 import json
 import socket
-import threading
 import multiprocessing
 import time
 
@@ -17,7 +16,8 @@ class MessageManager:
             try:
                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 client_socket.connect((host, port))
-                client_socket.send(message.encode())
+                hello = json.dumps(message)
+                client_socket.send(hello.encode())
                 client_socket.close()
                 break  # Exit the loop if message sent successfully
             except ConnectionRefusedError:
@@ -35,7 +35,9 @@ class MessageManager:
             message = conn.recv(1024).decode()
             if not message:
                 continue  # Skip empty messages
-            print(f"Received message from client: {message}")
+            #print(f"Received message from client: {message}")
+            hello = json.loads(message)
+            print(hello)
             conn.close()
         #
         # while True:
@@ -51,17 +53,11 @@ class MessageManager:
 
 
 if __name__ == '__main__':
- # Start receiving message thread
     port1 = 19002
     message2 = MessageManager(19001)
-
     proces1 = multiprocessing.Process(target=message2.start_receiving, args=(port1 , ))
     proces1.start()
-    #   proces1.join()
-    # thread_1 = threading.Thread(target=message2.receive_message,args=(socket.gethostname(), 19002))
-    # thread_1.start()
     message = MessageManager(19001)
-
     # Send message
     message.sending_message("hello", socket.gethostname(), 19002)
     time.sleep(3)

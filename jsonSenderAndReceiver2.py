@@ -16,6 +16,8 @@ class MessageManager:
         while True:
             try:
                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                json.dump(message)
+                print(message)
                 client_socket.connect((host, port))
                 client_socket.send(message.encode())
                 client_socket.close()
@@ -34,8 +36,10 @@ class MessageManager:
             print(f"Got connection from {addr}")
             message = conn.recv(1024).decode()
             if not message:
-                continue  # Skip empty messages
+                continue
             print(f"Received message from client: {message}")
+            date = json.load(message)
+            print(date)
             conn.close()
         #
         # while True:

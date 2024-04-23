@@ -121,7 +121,7 @@ class Sensor(BackTracking):
         self.target = []
         self.suggestion_list = {}
         self.name = sensor_id
-        self.messenger = MessageManager()
+        #self.messenger = MessageManager()
 
         # create dictionary of neighbor , each has a list
         # that specifies the status of its own targets
@@ -139,7 +139,7 @@ class Sensor(BackTracking):
             if element not in self.target:
                 self.target.append(element)
 
-    def update_neighbor_status(self, neighbor_status: Dict[int, list]):
+    def update_neighbor_status(self, neighbor_status: Dict[intc, list]):
         # neighborStatus is something look like this :
         # { neighbor_id : [ target 1 , target 2 , ... .. .  ] }
         # print(list(neighbor_status.keys())[0])
