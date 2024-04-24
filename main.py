@@ -1,5 +1,5 @@
 from typing import Dict
-
+import jsonSenderAndReceiver
 import json
 import socket
 import socket
@@ -113,7 +113,7 @@ class BackTracking:
 
 class Sensor(BackTracking):
 
-    def __init__(self, neighbor: list, k: int, sensor_id: int):
+    def __init__(self, neighbor: list, k: int, sensor_id: int, communication_list: dict,):
         super().__init__(k)
         self.local_tree = {}
         self.neighbor = {}
@@ -121,12 +121,34 @@ class Sensor(BackTracking):
         self.target = []
         self.suggestion_list = {}
         self.name = sensor_id
+        self.communication_list = communication_list
+        self.Sensor()
+        self.waiting_for_message_from = []
         #self.messenger = MessageManager()
 
         # create dictionary of neighbor , each has a list
         # that specifies the status of its own targets
         for element in neighbor:
             self.neighbor[element] = []
+
+    def Sensor(self):
+        # sensor prot is id + 19000
+        sensor_port = self.name + 19000
+        messenger = jsonSenderAndReceiver.MessageManager(sensor_port)
+        self.sense_object(["t2", "t4", "t3"])
+        while (True):
+            for neighbor in list(self.neighbor.keys()):
+                dist_port = neighbor+19000
+                messenger.sending_message({self.name: [self.target, self.local_tree]}, socket.gethostname(), dist_port)
+
+            for new_status in list(messenger.general_buffer.keys()):
+                tmp = messenger.get_buffer()
+                self.update_neighbor_status({new_status: tmp[1][0]})
+                if len(tmp[1][1]) != 0:
+                    self.compair_neighbor_tree(tmp[1][1])
+            self.update_local_tree()
+
+
 
     def sense_object(self, target):
         # it needs to change to 2 dimension
@@ -139,7 +161,7 @@ class Sensor(BackTracking):
             if element not in self.target:
                 self.target.append(element)
 
-    def update_neighbor_status(self, neighbor_status: Dict[intc, list]):
+    def update_neighbor_status(self, neighbor_status: Dict[int, list]):
         # neighborStatus is something look like this :
         # { neighbor_id : [ target 1 , target 2 , ... .. .  ] }
         # print(list(neighbor_status.keys())[0])
@@ -248,6 +270,49 @@ class Sensor(BackTracking):
         # print("i am done with neighbor")
         return self.update_local_tree()
 
+
+
+
+# if __name__ == '__main__':
+#     ins1 = Sensor([1, 2, 5, 4], 3, 3)
+#     ins1.sense_object(["t2", "t4", "t3"])
+#     ins1.update_neighbor_status({4: ["t3", "t4"]})
+#     ins1.update_neighbor_status({1: ["t2", "t3"]})
+#     ins1.update_neighbor_status({2: ["t2", "t1"]})
+#     ins1.update_neighbor_status({5: ["t4", "t3"]})
+#
+#     ins2 = Sensor([3, 2, 6], 3, 1)
+#     ins2.sense_object(["t2", "t1", "t3 "])
+#     ins2.update_neighbor_status({6: ["t1", "t2"]})
+#     ins2.update_neighbor_status({2: ["t1", "t2"]})
+#     ins2.update_neighbor_status({3: ["t4", "t2", "t3"]})
+#
+#     ins3 = Sensor([2, 1], 3, 6)
+#     ins3.sense_object(["t2", "t1"])
+#     ins3.update_neighbor_status({2: ["t1", "t2"]})
+#     ins3.update_neighbor_status({1: ["t1", "t2"]})
+#
+#     print("data in sens 3 :: ")
+#     ins1.create_local_tree()
+#     result1 = ins1.update_local_tree()
+#
+#     print("data in sens 1 :: ")
+#     ins2.create_local_tree()
+#     result2 = ins2.update_local_tree()
+#
+#     print("data in sens 6 :: ")
+#     ins3.create_local_tree()
+#     result3 = ins3.update_local_tree()
+#     print("3 --> 1")
+#     print(ins2.compair_neighbor_tree(result1))
+#     print("1 --> 3")
+#     print(ins1.compair_neighbor_tree(result2))
+#     print("6 --> 1")
+#     result4 = ins2.compair_neighbor_tree(result3)
+#     print(result4)
+#     print("1 --> 3")
+#     print(ins1.compair_neighbor_tree(result4))
+
     # def sort_unassigned_variable_list(unassigned_variable_list ):
 # class message_manager:
 #     def __init__(self , buffer_size):
@@ -270,51 +335,51 @@ class Sensor(BackTracking):
 #
 
 
-class MessageManager:
-    def __init__(self, my_port_tosend):
-        self.client_socket = None
-        self.server_socket = None
-        self.buffer = {}
-        self.my_port_tosend = my_port_tosend
-
-    def sending_message(self, message, host, port):
-        while True:
-            try:
-                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                client_socket.connect((host, port))
-                client_socket.send(message.encode())
-                client_socket.close()
-                break  # Exit the loop if message sent successfully
-            except ConnectionRefusedError:
-                print("Connection refused. Retrying in 1 second...")
-                time.sleep(1)
-
-    def receive_message(self, host, port):
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind((host, port))
-        server_socket.listen(1)
-        conn, addr = server_socket.accept()
-        while True:
-            conn, addr = server_socket.accept()
-            print(f"Got connection from {addr}")
-            message = conn.recv(1024).decode()
-            if not message:
-                continue  # Skip empty messages
-            print(f"Received message from client: {message}")
-            conn.close()
-        #
-        # while True:
-        #     print(f"Got connection from {addr}")
-        #     message = conn.recv(1024).decode()
-        #     if not message:
-        #         break
-        #     print(f"Received message from client: {message}")
-        # conn.close()
-    def start_receiving(self , port):
-        message = MessageManager(19002)
-        message.receive_message(socket.gethostname(), 19002)
-
-
+# class MessageManager:
+#     def __init__(self, my_port_tosend):
+#         self.client_socket = None
+#         self.server_socket = None
+#         self.buffer = {}
+#         self.my_port_tosend = my_port_tosend
+#
+#     def sending_message(self, message, host, port):
+#         while True:
+#             try:
+#                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#                 client_socket.connect((host, port))
+#                 client_socket.send(message.encode())
+#                 client_socket.close()
+#                 break  # Exit the loop if message sent successfully
+#             except ConnectionRefusedError:
+#                 print("Connection refused. Retrying in 1 second...")
+#                 time.sleep(1)
+#
+#     def receive_message(self, host, port):
+#         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#         server_socket.bind((host, port))
+#         server_socket.listen(1)
+#         conn, addr = server_socket.accept()
+#         while True:
+#             conn, addr = server_socket.accept()
+#             print(f"Got connection from {addr}")
+#             message = conn.recv(1024).decode()
+#             if not message:
+#                 continue  # Skip empty messages
+#             print(f"Received message from client: {message}")
+#             conn.close()
+#         #
+#         # while True:
+#         #     print(f"Got connection from {addr}")
+#         #     message = conn.recv(1024).decode()
+#         #     if not message:
+#         #         break
+#         #     print(f"Received message from client: {message}")
+#         # conn.close()
+#     def start_receiving(self , port):
+#         message = MessageManager(19002)
+#         message.receive_message(socket.gethostname(), 19002)
+#
+#
 
 #
 # # after full day , intruduse you to message manager function !!!!!( still dont know its call function method or ...)
@@ -341,47 +406,6 @@ class MessageManager:
 
 
 
-
-
-if __name__ == '__main__':
-    ins1 = Sensor([1, 2, 5, 4], 3, 3)
-    ins1.sense_object(["t2", "t4", "t3"])
-    ins1.update_neighbor_status({4: ["t3", "t4"]})
-    ins1.update_neighbor_status({1: ["t2", "t3"]})
-    ins1.update_neighbor_status({2: ["t2", "t1"]})
-    ins1.update_neighbor_status({5: ["t4", "t3"]})
-
-    ins2 = Sensor([3, 2, 6], 3, 1)
-    ins2.sense_object(["t2", "t1", "t3 "])
-    ins2.update_neighbor_status({6: ["t1", "t2"]})
-    ins2.update_neighbor_status({2: ["t1", "t2"]})
-    ins2.update_neighbor_status({3: ["t4", "t2", "t3"]})
-
-    ins3 = Sensor([2, 1], 3, 6)
-    ins3.sense_object(["t2", "t1"])
-    ins3.update_neighbor_status({2: ["t1", "t2"]})
-    ins3.update_neighbor_status({1: ["t1", "t2"]})
-
-    print("data in sens 3 :: ")
-    ins1.create_local_tree()
-    result1 = ins1.update_local_tree()
-
-    print("data in sens 1 :: ")
-    ins2.create_local_tree()
-    result2 = ins2.update_local_tree()
-
-    print("data in sens 6 :: ")
-    ins3.create_local_tree()
-    result3 = ins3.update_local_tree()
-    print("3 --> 1")
-    print(ins2.compair_neighbor_tree(result1))
-    print("1 --> 3")
-    print(ins1.compair_neighbor_tree(result2))
-    print("6 --> 1")
-    result4 = ins2.compair_neighbor_tree(result3)
-    print(result4)
-    print("1 --> 3")
-    print(ins1.compair_neighbor_tree(result4))
 
 
     # ins1.compair_neighbor_tree({1: ['t2'], 2: ['t2'], 6: ['t2'], 3: ["t2", "t4", "t3"]})
