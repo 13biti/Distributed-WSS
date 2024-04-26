@@ -634,11 +634,11 @@ if __name__ == '__main__':
     # ins6 = Sensor([1, 2], 3, 6)
     # ins6.sensor(["t2", "t1"])
 
-    ins1 = Sensor([1, 2, 5, 4], 3, 1)
+    ins1 = Sensor([2, 3, 4, 6], 3, 1)
     process1 = multiprocessing.Process(target=ins1.sensor, args=(["t2", "t3", "t1"], ))
 
-    ins2 = Sensor([1,3], 3, 2)
-    process2 = multiprocessing.Process(target=ins2.sensor, args=(["t2", "t1", "t3 "], ))
+    ins2 = Sensor([6,1,3], 3, 2)
+    process2 = multiprocessing.Process(target=ins2.sensor, args=(["t2", "t1"], ))
 
     ins3 = Sensor([2, 1, 4, 5], 3, 3)
     process3 = multiprocessing.Process(target=ins3.sensor, args=(["t2", "t3", "t4"], ))
@@ -650,7 +650,7 @@ if __name__ == '__main__':
     process5 = multiprocessing.Process(target=ins5.sensor, args=(["t3", "t4"], ))
 
     ins6 = Sensor([1, 2], 3, 6)
-    process6 = multiprocessing.Process(target=ins6.sensor, args=(["t2", "t1"] ,))
+    process6 = multiprocessing.Process(target=ins6.sensor, args=(["t2", "t1"],))
     process6.start()
     process5.start()
     process4.start()
