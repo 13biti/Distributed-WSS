@@ -8,6 +8,7 @@ import time
 
 import jsonSenderAndReceiver
 
+
 class BackTracking:
     def __init__(self, k):
         # target : [1 , 2]
@@ -16,7 +17,6 @@ class BackTracking:
         self.target_can_tracked_by_node = {}
         self.assignment = {}
         self.K = k
-        self.useless_target = []
         # self.recursive_backtracking(self.assignment)
 
     def node_status(self, node: int, list_of_target: list):
@@ -72,36 +72,43 @@ class BackTracking:
         # > also should check if other can tolk with this tracker or not !
         # if
         domain_list = []
-        print("here list of tctbnnnnn:" , self.target_can_tracked_by_node)
-        print("tctbnnnnn" ,tracker)
+        # print("here list of tctbnnnnn:", self.target_can_tracked_by_node)
+        # print("tctbnnnnn", tracker)
         for target in self.target_can_tracked_by_node.get(tracker):
-            print("here targett tctbnnnnn" , target)
-            print("list in domain cho back" , self.targetTracker)
+            # print("here targett tctbnnnnn", target)
+            # print("list in domain cho back", self.targetTracker)
             if len(self.targetTracker.get(target)) < k:
-                print("trk back", tracker," i am tracker")
-                # print(k - len(self.targetTracker.get(target)))
-                print("con back", self.candidates_to_track(target))
+                # print("trk back", tracker, " i am tracker")
+                # # print(k - len(self.targetTracker.get(target)))
+                # print("con back", self.candidates_to_track(target))
                 if (k - len(self.targetTracker.get(target))) <= self.candidates_to_track(target):
-                    domain_list.append(target)
+                    if tracker not in self.targetTracker.get(target):
+                        domain_list.append(target)
 
         if len(domain_list) != 0:
-            print("final domain back " , domain_list)
+            print("final domain back ", domain_list)
         #     return domain_list
 
         domain_list.sort(reverse=True, key=lambda item: len(self.targetTracker.get(item, [])))
         return domain_list
+    def reset_backtracking(self):
+        for target in list(self.targetTracker.keys()):
+            self.targetTracker[target] = []
+
 
     def recursive_backtracking(self, assignment):
-        print("33 ino one! here the back info :", assignment, 'ino one! here the back info target ctbn:', self.target_can_tracked_by_node, "ino one! here the back info :tartget track", self.targetTracker)
+        # print("33 ino one! here the back info :", assignment, 'ino one! here the back info target ctbn:',
+        #       self.target_can_tracked_by_node, "ino one! here the back info :tartget track", self.targetTracker)
         if len(list(self.assignment.keys())) == len(list(self.target_can_tracked_by_node.keys())):
-            print("44 ino one! here the back info :", assignment, 'ino one! here the back info target ctbn:', self.target_can_tracked_by_node, "ino one! here the back info :tartget track", self.targetTracker)
-            print("44 i want to return form bacck , here ass", self.assignment)
+            # print("44 ino one! here the back info :", assignment, 'ino one! here the back info target ctbn:',
+            #       self.target_can_tracked_by_node, "ino one! here the back info :tartget track", self.targetTracker)
+            # print("44 i want to return form bacck , here ass", self.assignment)
             return assignment
         # variable = self.unassigned_variable(self.assignment)
         # if variable is not None:
         for item in self.unassigned_variable(assignment):
             domain = self.domain_values(item, self.K)
-            print("here domain :",self.domain_values(item, 3))
+            print("here domain :", self.domain_values(item, 3))
             if len(domain) == 0:
                 self.assignment.setdefault(item, [])
                 return self.recursive_backtracking(assignment)
@@ -118,6 +125,7 @@ class BackTracking:
                         assignment[item].remove(value)
             return False
         # var = ( lambda item : item not in self.unassigned_variable())
+
 
 #
 # class BackTracking:
@@ -253,8 +261,10 @@ class Sensor(BackTracking):
 
         have_change = True
         while True:
+            self.update_local_tree()
             print(f"{self.name} say here the general buffer: ", messenger.general_buffer, "have change ? ", have_change)
-            print(f"{self.name} say my tree is : ", self.local_tree)
+            print(f"13 {self.name} say my backresult is : {self.local_tree} come from {self.neighbor}")
+
 
             if have_change:
                 for neg in list(self.neighbor.keys()):
@@ -271,15 +281,14 @@ class Sensor(BackTracking):
                 for _ in list(messenger.general_buffer.keys()):
                     tmp = messenger.get_buffer()
                     # print(f"{self.name} say here the bit tmp : ", tmp)
-                    print(f"update negber from {self.neighbor} to {tmp[0]}:{tmp[1][0]}")
+                    ttmp = self.neighbor
                     have_change = self.update_neighbor_status({tmp[0]: tmp[1][0]})
+                    print(f"22 negber changed from {ttmp} to {self.neighbor} by using {tmp[0]}:{tmp[1][0]}")
                     # print(f"{self.name} say here the bit negbors : ", self.neighbor)
                     # print(f"{self.name} say here the bit my tree : ", self.local_tree)
                     if len(tmp[1][1]) != 0:
                         print(f"i am {self.name} g compair{tmp[1][1]} with {self.local_tree}")
                         self.compair_neighbor_tree(tmp[1][1])
-                self.update_locfal_tree()
-
                 # print(self.local_tree)
 
     # def sensor(self):
@@ -386,6 +395,10 @@ class Sensor(BackTracking):
         for node in list(self.neighbor.keys()):
             self.node_status(node, self.neighbor.get(node))
         self.assignment = {}
+        self.reset_backtracking()
+        # for element in list(self.target_can_tracked_by_node.keys()):
+        #     self.target_can_tracked_by_node[element] = []
+        #
         self.recursive_backtracking(self.assignment)
         for sensor in list(self.assignment.keys()):
             if len(self.assignment.get(sensor)) == 0:
@@ -397,6 +410,7 @@ class Sensor(BackTracking):
         self.local_tree = self.assignment
         print(self.assignment)
         return self.assignment
+
     # def update_local_tree(self):
     #     self.node_status(self.name, self.target)
     #     for node in list(self.neighbor.keys()):
@@ -616,10 +630,10 @@ if __name__ == '__main__':
     # process1.start()
     # process1.start()
     # #
-    # ins1 = Sensor([1, 2, 5, 4], 3, 1)
+    # ins1 = Sensor([3, 2, 6, 4], 3, 1)
     # ins1.sensor(["t2", "t3", "t1"])
     #
-    # ins2 = Sensor([1,3], 3, 2)
+    # ins2 = Sensor([1,3,6], 3, 2)
     # ins2.sensor(["t2", "t1", "t3 "])
     #
     # ins3 = Sensor([2, 1, 4, 5], 3, 3)
@@ -633,21 +647,21 @@ if __name__ == '__main__':
     #
     # ins6 = Sensor([1, 2], 3, 6)
     # ins6.sensor(["t2", "t1"])
-
+    #
     ins1 = Sensor([2, 3, 4, 6], 3, 1)
-    process1 = multiprocessing.Process(target=ins1.sensor, args=(["t2", "t3", "t1"], ))
+    process1 = multiprocessing.Process(target=ins1.sensor, args=(["t2", "t3", "t1"],))
 
-    ins2 = Sensor([6,1,3], 3, 2)
-    process2 = multiprocessing.Process(target=ins2.sensor, args=(["t2", "t1"], ))
+    ins2 = Sensor([6, 1, 3], 3, 2)
+    process2 = multiprocessing.Process(target=ins2.sensor, args=(["t2", "t1"],))
 
     ins3 = Sensor([2, 1, 4, 5], 3, 3)
-    process3 = multiprocessing.Process(target=ins3.sensor, args=(["t2", "t3", "t4"], ))
+    process3 = multiprocessing.Process(target=ins3.sensor, args=(["t2", "t3", "t4"],))
 
     ins4 = Sensor([5, 3, 1], 3, 4)
-    process4 = multiprocessing.Process(target=ins4.sensor, args=(["t3", "t4"], ))
+    process4 = multiprocessing.Process(target=ins4.sensor, args=(["t3", "t4"],))
 
     ins5 = Sensor([3, 4], 3, 5)
-    process5 = multiprocessing.Process(target=ins5.sensor, args=(["t3", "t4"], ))
+    process5 = multiprocessing.Process(target=ins5.sensor, args=(["t3", "t4"],))
 
     ins6 = Sensor([1, 2], 3, 6)
     process6 = multiprocessing.Process(target=ins6.sensor, args=(["t2", "t1"],))
