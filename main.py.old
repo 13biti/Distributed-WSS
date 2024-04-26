@@ -1,0 +1,66 @@
+import multiprocessing
+
+import Sensor
+
+if __name__ == '__main__':
+    ins1 = Sensor.Sensor([1], 1, 1, ["t2", "t3", "t1"])
+    process1 = multiprocessing.Process(target=ins1.sensor, args=())
+    process1.start()
+    #
+    # ins2 = Sensor.Sensor([1], 2, 2, ["t2", "t1", "t3 "])
+    # process2 = multiprocessing.Process(target=ins2.sensor, args=())
+    # process2.start()
+
+    # ins3 = Sensor.Sensor([2, 1, 4, 5], 3, 3, ["t2", "t3", "t4"])
+    # process3 = multiprocessing.Process(target=ins3.sensor, args=())
+    # process3.start()
+    #
+    # ins4 = Sensor.Sensor([5, 3, 1], 3, 4, ["t3", "t4"])
+    # process4 = multiprocessing.Process(target=ins4.sensor, args=())
+    # process4.start()
+    #
+    # ins5 = Sensor.Sensor([3, 4], 3, 5, ["t3", "t4"])
+    # process5 = multiprocessing.Process(target=ins5.sensor, args=())
+    # process5.start()
+    #
+    # ins6 = Sensor.Sensor([1, 2], 3, 6, ["t2", "t1"])
+    # process6 = multiprocessing.Process(target=ins6.sensor, args=())
+    # process6.start()
+
+    #     ins1.sense_object(["t2", "t4", "t3"])
+    #     ins1.update_neighbor_status({4: ["t3", "t4"]})
+    #     ins1.update_neighbor_status({1: ["t2", "t3"]})
+    #     ins1.update_neighbor_status({2: ["t2", "t1"]})
+    #     ins1.update_neighbor_status({5: ["t4", "t3"]})
+    #
+    #     ins2 = Sensor)
+    #     ins2.sense_object(["t2", "t1", "t3 "])
+    #     ins2.update_neighbor_status({6: ["t1", "t2"]})
+    #     ins2.update_neighbor_status({2: ["t1", "t2"]})
+    #     ins2.update_neighbor_status({3: ["t4", "t2", "t3"]})
+    #
+    #     ins3 = Sensor([2, 1], 3, 6)
+    #     ins3.sense_object(["t2", "t1"])
+    #     ins3.update_neighbor_status({2: ["t1", "t2"]})
+    #     ins3.update_neighbor_status({1: ["t1", "t2"]})
+    #
+    #     print("data in sens 3 :: ")
+    #     ins1.create_local_tree()
+    #     result1 = ins1.update_local_tree()
+    #
+    #     print("data in sens 1 :: ")
+    #     ins2.create_local_tree()
+    #     result2 = ins2.update_local_tree()
+    #
+    #     print("data in sens 6 :: ")
+    #     ins3.create_local_tree()
+    #     result3 = ins3.update_local_tree()
+    #     print("3 --> 1")
+    #     print(ins2.compair_neighbor_tree(result1))
+    #     print("1 --> 3")
+    #     print(ins1.compair_neighbor_tree(result2))
+    #     print("6 --> 1")
+    #     result4 = ins2.compair_neighbor_tree(result3)
+    #     print(result4)
+    #     print("1 --> 3")
+    #     print(ins1.compair_neighbor_tree(result4))

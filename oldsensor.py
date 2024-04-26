@@ -1,10 +1,4 @@
 from typing import Dict
-import jsonSenderAndReceiver
-import json
-import socket
-import socket
-import multiprocessing
-import time
 
 
 class BackTracking:
@@ -71,6 +65,8 @@ class BackTracking:
         # > also should check if other can tolk with this tracker or not !
         # if
         domain_list = []
+        print("here list of tctbnnnnn:" , self.target_can_tracked_by_node)
+
         for target in self.target_can_tracked_by_node.get(tracker):
             # print(self.targetTracker.get(target))
             if len(self.targetTracker.get(target)) < k:
@@ -88,18 +84,21 @@ class BackTracking:
         return domain_list
 
     def recursive_backtracking(self, assignment):
+        print("ino one! here the back info :", assignment)
         if len(list(self.assignment.keys())) == len(list(self.target_can_tracked_by_node.keys())):
             return assignment
         # variable = self.unassigned_variable(self.assignment)
         # if variable is not None:
         for item in self.unassigned_variable(self.assignment):
-            # print(self.domain_values(item, 3))
             domain = self.domain_values(item, self.K)
+            print("here domain :", self.domain_values(item, 3))
             if len(domain) == 0:
                 self.assignment.setdefault(item, [])
                 return self.recursive_backtracking(self.assignment)
             else:
                 for value in domain:
+                    print("here domainee :", domain)
+                    print("check value :", value)
                     if self.eligible_to_conditions(value, item, self.K):
                         self.assignment.setdefault(item, []).append(value)
                         self.targetTracker.setdefault(value, []).append(item)
@@ -108,12 +107,34 @@ class BackTracking:
                             return result
                         assignment[item].remove(value)
             return False
-        # var = ( lambda item : item not in self.unassigned_variable())
+
+    # def recursive_backtracking(self, assignment):
+    #     if len(list(self.assignment.keys())) == len(list(self.target_can_tracked_by_node.keys())):
+    #         return assignment
+    #     # variable = self.unassigned_variable(self.assignment)
+    #     # if variable is not None:
+    #     for item in self.unassigned_variable(self.assignment):
+    #         # print(self.domain_values(item, 3))
+    #         domain = self.domain_values(item, self.K)
+    #         if len(domain) == 0:
+    #             self.assignment.setdefault(item, [])
+    #             return self.recursive_backtracking(self.assignment)
+    #         else:
+    #             for value in domain:
+    #                 if self.eligible_to_conditions(value, item, self.K):
+    #                     self.assignment.setdefault(item, []).append(value)
+    #                     self.targetTracker.setdefault(value, []).append(item)
+    #                     result = self.recursive_backtracking(assignment)
+    #                     if result != False:
+    #                         return result
+    #                     assignment[item].remove(value)
+    #         return False
+    #     # var = ( lambda item : item not in self.unassigned_variable())
 
 
 class Sensor(BackTracking):
 
-    def __init__(self, neighbor: list, k: int, sensor_id: int, sense: list):
+    def __init__(self, neighbor: list, k: int, sensor_id: int):
         super().__init__(k)
         self.local_tree = {}
         self.neighbor = {}
@@ -121,40 +142,12 @@ class Sensor(BackTracking):
         self.target = []
         self.suggestion_list = {}
         self.name = sensor_id
-        self.waiting_for_message_from = []
-        self.sense_object(sense)
+
         # create dictionary of neighbor , each has a list
         # that specifies the status of its own targets
         for element in neighbor:
             self.neighbor[element] = []
-        # self.Sensor()
 
-    # def sensor(self):
-    #     # sensor prot is id + 19000
-    #     sensor_port = self.name + 19000
-    #     messenger = jsonSenderAndReceiver.MessageManager(sensor_port)
-    #     messenger.start_receiving()
-    #     have_change = True
-    #     while (True):
-    #         print("this is your neighbor :", self.neighbor, have_change)
-    #         if have_change:
-    #             for neighbor in list(self.neighbor.keys()):
-    #                 dist_port = neighbor + 19000
-    #                 messenger.sending_message({self.name: [self.target, self.local_tree]}, socket.gethostname(),
-    #                                           dist_port)
-    #             have_change = False
-    #         for new_status in messenger.general_buffer:
-    #             print("here the new status :" ,new_status)
-    #             tmp = messenger.get_buffer()
-    #             print("here is the  big tmp : ", tmp , self.name)
-    #             print("update neighbor like this : ", {tmp[0]: tmp[1][0]})
-    #             have_change = self.update_neighbor_status({tmp[0]: tmp[1][0]})
-    #             self.update_local_tree()
-    #             print("is thes proper three ? :", tmp[1][1])
-    #             print(f"this is my three ? :{self.local_tree} i am : " , self.name)
-    #             if len(tmp[1][1]) != 0:
-    #                 have_change = self.compair_neighbor_tree(tmp[1][1])
-    #             print("here the buffer after shit stuff :" , messenger.general_buffer)
     def sense_object(self, target):
         # it needs to change to 2 dimension
         # update target list
@@ -170,11 +163,7 @@ class Sensor(BackTracking):
         # neighborStatus is something look like this :
         # { neighbor_id : [ target 1 , target 2 , ... .. .  ] }
         # print(list(neighbor_status.keys())[0])
-
-        if self.neighbor.get(list(neighbor_status.keys())[0], []) == list(neighbor_status.values())[0]:
-            return False
         self.neighbor[list(neighbor_status.keys())[0]] = list(neighbor_status.values())[0]
-        return True
 
     def create_local_tree(self):
         # Different situations of problem :
@@ -205,7 +194,7 @@ class Sensor(BackTracking):
                     counter += 1
                     self.suggestion_list[sen] = list(self.neighbor.values())[0]
                     if counter == self.K - 1:
-                        # print(self.suggestion_list)
+                        print(self.suggestion_list)
                         return
         # are sensor have multiple target
         # It is very important that we do our best at this stage to involve K 'single target' node
@@ -228,7 +217,8 @@ class Sensor(BackTracking):
     def update_local_tree(self):
         self.node_status(self.name, self.target)
         for node in list(self.neighbor.keys()):
-            self.node_status(node, self.neighbor.get(node, []))
+            self.node_status(node, self.neighbor.get(node))
+
         self.recursive_backtracking(self.assignment)
         for sensor in list(self.assignment.keys()):
             if len(self.assignment.get(sensor)) == 0:
@@ -238,8 +228,8 @@ class Sensor(BackTracking):
         #         for decision in self.targetTracker[target]:
         #             result[decision] = self.target_can_tracked_by_node.get(decision)
         self.local_tree = self.assignment
-        # print(self.assignment)
-        return True
+        print(self.assignment)
+        return self.assignment
 
     def compair_neighbor_tree(self, tree: dict):
         # There are two main intuitive conditions for comparing the node tree of two sensors.
@@ -251,185 +241,114 @@ class Sensor(BackTracking):
         # overall topology, but the cause of certainty is ignorance.
         # The second condition prioritizes the sensors that have fewer neighbors. This condition
         # allows the sensor that has a  smaller range of awareness to make a decision to have a more preferable opinion.
-        for sensor in list(tree.keys()):
-            if len(self.local_tree.get(sensor, [])) > len(tree.get(sensor, [])):
+        # ++ target score way !
+        my_tree_score = 0
+        suggestion_tree_score = 0
+        common_keys = set(self.local_tree.keys()) & set(tree.keys())
+        for sensor in common_keys:
+            if len(tree.get(sensor)) == len(self.local_tree.get(sensor)):
+                continue
+            elif len(tree.get(sensor)) == 1:
+                suggestion_tree_score += 1
+            elif len(self.local_tree.get(sensor)) == 1:
+                my_tree_score += 1
+
+        if my_tree_score == suggestion_tree_score:
+            if len(list(self.local_tree.keys())) < len(list(tree.keys())):
+                # I have better tree !
                 return False
-        if len(list(self.local_tree.keys())) < len(list(tree.keys())):
+        if my_tree_score > suggestion_tree_score:
+            # I have better tree
             return False
 
         for target in self.targetTracker:
             self.targetTracker[target] = []
         self.assignment = {}
         for sensor in list(tree.keys()):
-            if len(tree.get(sensor)) == 1 and tree.get(sensor)[0] in self.targetTracker:
-                self.targetTracker[tree.get(sensor)[0]].append(sensor)
-                if sensor in self.neighbor.keys() or sensor == self.name:
-                    self.assignment[sensor] = tree.get(sensor)
-                    self.local_tree[sensor] = tree.get(sensor, [])
-                    self.target_can_tracked_by_node.update({sensor: tree.get(sensor, [])})
+            if sensor in self.neighbor.keys() or sensor == self.name:
+                self.assignment[sensor] = tree.get(sensor)
+                self.local_tree[sensor] = tree.get(sensor, [])
+                self.target_can_tracked_by_node.update({sensor: tree.get(sensor, [])})
+        return self.update_local_tree()
 
         # for target in list(tree.values()):
-
         # print("here target list : ")
         # print(self.target_can_tracked_by_node)
         # print("here target tracker :")
         # print(self.targetTracker)
         # print(self.local_tree)
         # print("i am done with neighbor")
-        return True
 
+    # def sort_unassigned_variable_list(unassigned_variable_list ):
 
-#
-# if __name__ == '__main__':
-#     ins1 = Sensor([1], 3, 1, ["t2", "t3", "t1"])
-#     ins1.sensor()
-# ins2 = Sensor.Sensor([3, 1, 6], 3, 2, ["t2", "t1", "t3 "])
-# process2 = multiprocessing.Process(target=ins2.sensor, args=())
-# process2.start()
-#
-# ins3 = Sensor.Sensor([2, 1, 4, 5], 3, 3, ["t2", "t3", "t4"])
-# process3 = multiprocessing.Process(target=ins3.sensor, args=())
-# process3.start()
-#
-# ins4 = Sensor.Sensor([5, 3, 1], 3, 4, ["t3", "t4"])
-# process4 = multiprocessing.Process(target=ins4.sensor, args=())
-# process4.start()
-#
-# ins5 = Sensor.Sensor([3, 4], 3, 5, ["t3", "t4"])
-# process5 = multiprocessing.Process(target=ins5.sensor, args=())
-# process5.start()
-#
-# ins6 = Sensor.Sensor([1, 2], 3, 6, ["t2", "t1"])
-# process6 = multiprocessing.Process(target=ins6.sensor, args=())
-# process6.start()
 
 if __name__ == '__main__':
-    ins1 = Sensor([1, 2, 5, 4], 3, 3,["t2", "t4", "t3"])
-    ins1.update_neighbor_status({4: ["t3", "t4"]})
-    ins1.update_neighbor_status({1: ["t2", "t3"]})
-    ins1.update_neighbor_status({2: ["t2", "t1"]})
-    ins1.update_neighbor_status({5: ["t4", "t3"]})
+    ins1 = Sensor([2], 2, 1)
+    ins1.sense_object(["t2", "t3", "t1"])
+    ins1.update_neighbor_status({2: ["t2", "t1", "t3 "]})
+   # ins1.update_neighbor_status({3: ["t2", "t3", "t4"]})
 
-    ins2 = Sensor([3, 2, 6], 3, 1,["t2", "t1", "t3 "])
-    ins2.update_neighbor_status({6: ["t1", "t2"]})
-    ins2.update_neighbor_status({2: ["t1", "t2"]})
-    ins2.update_neighbor_status({3: ["t4", "t2", "t3"]})
+    ins2 = Sensor([ 1], 2, 2)
+    ins2.sense_object(["t2", "t1", "t3 "])
+    #ins2.update_neighbor_status({3: ["t2", "t3", "t4"]})
+    ins2.update_neighbor_status({1: ["t2", "t3", "t1"]})
 
-    ins3 = Sensor([2, 1], 3, 6,["t2", "t1"])
-    ins3.update_neighbor_status({2: ["t1", "t2"]})
-    ins3.update_neighbor_status({1: ["t1", "t2"]})
-
-    print("data in sens 3 :: ")
+    # ins3 = Sensor([2, 1], 2, 3)
+    # ins3.sense_object(["t2", "t3", "t4"])
+    # ins3.update_neighbor_status({2: ["t2", "t1", "t3 "]})
+    # ins3.update_neighbor_status({1: ["t2", "t3", "t1"]})
+    #
+    print("data in sens 1 :: ")
     ins1.create_local_tree()
     result1 = ins1.update_local_tree()
+    print(result1)
 
-    print("data in sens 1 :: ")
-    ins2.create_local_tree()
-    result2 = ins2.update_local_tree()
+    # print("data in sens 2 :: ")
+    # ins2.create_local_tree()
+    # result2 = ins2.update_local_tree()
+    #
+    # print("data in sens 3 :: ")
+    # ins3.create_local_tree()
+    # result3 = ins3.update_local_tree()
+    #
+    # print("1 --> 3")
+    # print(ins3.compair_neighbor_tree(result1))
+    # print("1 --> 2")
+    # print(ins2.compair_neighbor_tree(result1))
+    #
+    # print("2 --> 1")
+    # result4 = ins1.compair_neighbor_tree(result2)
+    # print(result4)
+    # print("2 --> 3")
+    # print(ins3.compair_neighbor_tree(result2))
+    #
+    # print("3 --> 2")
+    # result4 = ins2.compair_neighbor_tree(result3)
+    # print(result4)
+    # print("3 --> 1")
+    # print(ins1.compair_neighbor_tree(result3))
+    #
+    # print(ins1.local_tree)
+    # 
+    # print("data in sens 3 :: ")
+    # ins1.create_local_tree()
+    # result1 = ins1.update_local_tree()
+    # 
+    # print("data in sens 1 :: ")
+    # ins2.create_local_tree()
+    # result2 = ins2.update_local_tree()
+    # 
+    # print("data in sens 6 :: ")
+    # ins3.create_local_tree()
+    # result3 = ins3.update_local_tree()
+    # print("3 --> 1")
+    # print(ins2.compair_neighbor_tree(result1))
+    # print("1 --> 3")
+    # print(ins1.compair_neighbor_tree(result2))
+    # print("6 --> 1")
+    # result4 = ins2.compair_neighbor_tree(result3)
+    # print(result4)
+    # print("1 --> 3")
+    # print(ins1.compair_neighbor_tree(result4))
 
-    print("data in sens 6 :: ")
-    ins3.create_local_tree()
-    result3 = ins3.update_local_tree()
-    print("3 --> 1")
-    print(ins2.compair_neighbor_tree(result1))
-    print("1 --> 3")
-    print(ins1.compair_neighbor_tree(result2))
-    print("6 --> 1")
-    result4 = ins2.compair_neighbor_tree(result3)
-    print(result4)
-    print("1 --> 3")
-    print(ins1.compair_neighbor_tree(result4))
-
-# def sort_unassigned_variable_list(unassigned_variable_list ):
-# class message_manager:
-#     def __init__(self , buffer_size):
-#         self.buffer = {}
-#         self.buffer_size = buffer_size
-#
-#     def receive_message(self, sender_id , message):
-#         self.buffer[sender_id] = message
-#
-#     def get_message(self , sender_id):
-#         result = self.buffer.get(sender_id, [])
-#         self.clear_buffer(sender_id)
-#         return result
-#
-#     def clear_buffer(self , sender_id):
-#         self.buffer[sender_id] = None
-#
-#     def receiver(self):
-#         while True:
-#
-
-
-# class MessageManager:
-#     def __init__(self, my_port_tosend):
-#         self.client_socket = None
-#         self.server_socket = None
-#         self.buffer = {}
-#         self.my_port_tosend = my_port_tosend
-#
-#     def sending_message(self, message, host, port):
-#         while True:
-#             try:
-#                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#                 client_socket.connect((host, port))
-#                 client_socket.send(message.encode())
-#                 client_socket.close()
-#                 break  # Exit the loop if message sent successfully
-#             except ConnectionRefusedError:
-#                 print("Connection refused. Retrying in 1 second...")
-#                 time.sleep(1)
-#
-#     def receive_message(self, host, port):
-#         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#         server_socket.bind((host, port))
-#         server_socket.listen(1)
-#         conn, addr = server_socket.accept()
-#         while True:
-#             conn, addr = server_socket.accept()
-#             print(f"Got connection from {addr}")
-#             message = conn.recv(1024).decode()
-#             if not message:
-#                 continue  # Skip empty messages
-#             print(f"Received message from client: {message}")
-#             conn.close()
-#         #
-#         # while True:
-#         #     print(f"Got connection from {addr}")
-#         #     message = conn.recv(1024).decode()
-#         #     if not message:
-#         #         break
-#         #     print(f"Received message from client: {message}")
-#         # conn.close()
-#     def start_receiving(self , port):
-#         message = MessageManager(19002)
-#         message.receive_message(socket.gethostname(), 19002)
-#
-#
-
-#
-# # after full day , intruduse you to message manager function !!!!!( still dont know its call function method or ...)
-#  # Start receiving message thread
-#     port1 = 19002
-#     message2 = MessageManager(19001)
-#
-#     proces1 = multiprocessing.Process(target=message2.start_receiving, args=(port1 , ))
-#     proces1.start()
-#     #   proces1.join()
-#     # thread_1 = threading.Thread(target=message2.receive_message,args=(socket.gethostname(), 19002))
-#     # thread_1.start()
-#     message = MessageManager(19001)
-#
-#     # Send message
-#     message.sending_message("hello", socket.gethostname(), 19002)
-#     time.sleep(3)
-#     message.sending_message("hello", socket.gethostname(), 19002)
-#     time.sleep(3)
-#     message.sending_message("hello", socket.gethostname(), 19002)
-#     time.sleep(3)
-#     message.sending_message("hello", socket.gethostname(), 19002)
-#     # message.sending_message("hello", socket.gethostname(), 19002)
-
-
-# ins1.compair_neighbor_tree({1: ['t2'], 2: ['t2'], 6: ['t2'], 3: ["t2", "t4", "t3"]})
+    # ins1.compair_neighbor_tree({1: ['t2'], 2: ['t2'], 6: ['t2'], 3: ["t2", "t4", "t3"]})
