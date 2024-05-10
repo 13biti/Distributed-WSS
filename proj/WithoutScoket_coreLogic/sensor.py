@@ -65,8 +65,6 @@ class BackTracking:
         # > also should check if other can tolk with this tracker or not !
         # if
         domain_list = []
-        print("here list of tctbnnnnn:" , self.target_can_tracked_by_node)
-
         for target in self.target_can_tracked_by_node.get(tracker):
             # print(self.targetTracker.get(target))
             if len(self.targetTracker.get(target)) < k:
@@ -84,21 +82,18 @@ class BackTracking:
         return domain_list
 
     def recursive_backtracking(self, assignment):
-        print("ino one! here the back info :", assignment)
         if len(list(self.assignment.keys())) == len(list(self.target_can_tracked_by_node.keys())):
             return assignment
         # variable = self.unassigned_variable(self.assignment)
         # if variable is not None:
         for item in self.unassigned_variable(self.assignment):
+            # print(self.domain_values(item, 3))
             domain = self.domain_values(item, self.K)
-            print("here domain :", self.domain_values(item, 3))
             if len(domain) == 0:
                 self.assignment.setdefault(item, [])
                 return self.recursive_backtracking(self.assignment)
             else:
                 for value in domain:
-                    print("here domainee :", domain)
-                    print("check value :", value)
                     if self.eligible_to_conditions(value, item, self.K):
                         self.assignment.setdefault(item, []).append(value)
                         self.targetTracker.setdefault(value, []).append(item)
@@ -107,29 +102,7 @@ class BackTracking:
                             return result
                         assignment[item].remove(value)
             return False
-
-    # def recursive_backtracking(self, assignment):
-    #     if len(list(self.assignment.keys())) == len(list(self.target_can_tracked_by_node.keys())):
-    #         return assignment
-    #     # variable = self.unassigned_variable(self.assignment)
-    #     # if variable is not None:
-    #     for item in self.unassigned_variable(self.assignment):
-    #         # print(self.domain_values(item, 3))
-    #         domain = self.domain_values(item, self.K)
-    #         if len(domain) == 0:
-    #             self.assignment.setdefault(item, [])
-    #             return self.recursive_backtracking(self.assignment)
-    #         else:
-    #             for value in domain:
-    #                 if self.eligible_to_conditions(value, item, self.K):
-    #                     self.assignment.setdefault(item, []).append(value)
-    #                     self.targetTracker.setdefault(value, []).append(item)
-    #                     result = self.recursive_backtracking(assignment)
-    #                     if result != False:
-    #                         return result
-    #                     assignment[item].remove(value)
-    #         return False
-    #     # var = ( lambda item : item not in self.unassigned_variable())
+        # var = ( lambda item : item not in self.unassigned_variable())
 
 
 class Sensor(BackTracking):
@@ -221,12 +194,13 @@ class Sensor(BackTracking):
 
         self.recursive_backtracking(self.assignment)
         for sensor in list(self.assignment.keys()):
-            if len(self.assignment.get(sensor)) == 0:
-                self.assignment[sensor] = self.target_can_tracked_by_node.get(sensor);
+            if len(self.assignment.get(sensor)) == 0 :
+                self.assignment[sensor] =  self.target_can_tracked_by_node.get(sensor);
         # for target in list(self.targetTracker.keys()):
         #     if len(self.targetTracker[target]) < self.K:
         #         for decision in self.targetTracker[target]:
         #             result[decision] = self.target_can_tracked_by_node.get(decision)
+
         self.local_tree = self.assignment
         print(self.assignment)
         return self.assignment
@@ -241,179 +215,74 @@ class Sensor(BackTracking):
         # overall topology, but the cause of certainty is ignorance.
         # The second condition prioritizes the sensors that have fewer neighbors. This condition
         # allows the sensor that has a  smaller range of awareness to make a decision to have a more preferable opinion.
-        print(
-            f"12p1 {self.name} say bif comp . here info stctby :{self.target_can_tracked_by_node} , local :{self.local_tree} , TT{self.targetTracker} ,rec tree{tree} ")
-        my_tree_score = 0
-        suggestion_tree_score = 0
-        common_keys = set(self.local_tree.keys()) & set(tree.keys())
-        for sensor in common_keys:
-            if len(tree.get(sensor)) == len(self.local_tree.get(sensor)):
-                continue
-            elif len(tree.get(sensor)) == 1:
-                suggestion_tree_score += 1
-            elif len(self.local_tree.get(sensor)) == 1:
-                my_tree_score += 1
-        if my_tree_score > suggestion_tree_score:
-            print(
-                f"i am {self.name} and iam in comp >>>>, here my localtree : {self.local_tree} and here is received one : {tree}")
-            # I have better tree
-            return False
-        if my_tree_score == suggestion_tree_score:
-            if len(list(self.local_tree.keys())) < len(list(tree.keys())):
-                # I have better tree !
-                print(
-                    f"i am {self.name} and iam in comp <<<< , here my localtree : {self.local_tree} and here is received one : {tree}")
+        for sensor in list(tree.keys()):
+            if len(self.local_tree.get(sensor, [])) > len(tree.get(sensor , [])):
                 return False
+        if len(list(self.local_tree.keys())) < len(list(tree.keys())):
+            return False
 
-        for target in list(self.targetTracker.keys()):
+        for target in self.targetTracker:
             self.targetTracker[target] = []
-        old_asg = self.assignment.copy()
         self.assignment = {}
         for sensor in list(tree.keys()):
-            if sensor in self.neighbor.keys() or sensor == self.name:
-                print(
-                    f"i am {self.name} and iam in comp **, here my localtree : {self.local_tree} and here is received one : {tree}")
-                print(
-                    f"i am {self.name} and iam in comp <<<< , here my TCTBN : {self.target_can_tracked_by_node} and here is received one : {tree}")
-                self.assignment[sensor] = tree.get(sensor)
-                self.local_tree[sensor] = tree.get(sensor, [])
-                if len(self.target_can_tracked_by_node[sensor]) > len(tree.get(sensor)):
+            if len(tree.get(sensor)) == 1 and tree.get(sensor)[0] in self.targetTracker:
+                self.targetTracker[tree.get(sensor)[0]].append(sensor)
+                if sensor in self.neighbor.keys() or sensor == self.name:
+                    self.assignment[sensor] = tree.get(sensor)
+                    self.local_tree[sensor] = tree.get(sensor, [])
                     self.target_can_tracked_by_node.update({sensor: tree.get(sensor, [])})
+        #for target in list(tree.values()):
 
-        for key in list(self.neighbor.keys()):
-            if self.assignment.get(key) != old_asg.get(key):
-                print(f"comp there are some difference between {old_asg} and {self.assignment}")
-                print(
-                    f"12p2 {self.name} say bif comp . here info stctby :{self.target_can_tracked_by_node} , local :{self.local_tree} , TT{self.targetTracker} ,rec tree{tree} ")
+        # print("here target list : ")
+        # print(self.target_can_tracked_by_node)
+        # print("here target tracker :")
+        # print(self.targetTracker)
+        # print(self.local_tree)
+        # print("i am done with neighbor")
+        return self.update_local_tree()
 
-                return True
-        return False
-
-    # def compair_neighbor_tree(self, tree: dict):
-    #     # There are two main intuitive conditions for comparing the node tree of two sensors.
-    #     # The first condition that has more priority; The condition is that the number of targets is less per sensor.
-    #     # This condition gives priority to the decision that has more certainty.
-    #     # The second condition is priority with the tree that contains the least number of nodes.
-    #     # This main condition solves the defect of the first condition to some extent.
-    #     # In the first condition, a sensor may make a decision that is more certain due to ignorance of the
-    #     # overall topology, but the cause of certainty is ignorance.
-    #     # The second condition prioritizes the sensors that have fewer neighbors. This condition
-    #     # allows the sensor that has a  smaller range of awareness to make a decision to have a more preferable opinion.
-    #     # ++ target score way !
-    #     my_tree_score = 0
-    #     suggestion_tree_score = 0
-    #     common_keys = set(self.local_tree.keys()) & set(tree.keys())
-    #     for sensor in common_keys:
-    #         if len(tree.get(sensor)) == len(self.local_tree.get(sensor)):
-    #             continue
-    #         elif len(tree.get(sensor)) == 1:
-    #             suggestion_tree_score += 1
-    #         elif len(self.local_tree.get(sensor)) == 1:
-    #             my_tree_score += 1
-    #
-    #     if my_tree_score == suggestion_tree_score:
-    #         if len(list(self.local_tree.keys())) < len(list(tree.keys())):
-    #             # I have better tree !
-    #             return False
-    #     if my_tree_score > suggestion_tree_score:
-    #         # I have better tree
-    #         return False
-    #
-    #     for target in self.targetTracker:
-    #         self.targetTracker[target] = []
-    #     self.assignment = {}
-    #     for sensor in list(tree.keys()):
-    #         if sensor in self.neighbor.keys() or sensor == self.name:
-    #             self.assignment[sensor] = tree.get(sensor)
-    #             self.local_tree[sensor] = tree.get(sensor, [])
-    #             self.target_can_tracked_by_node.update({sensor: tree.get(sensor, [])})
-    #     return self.update_local_tree()
-    #
-    #     # for target in list(tree.values()):
-    #     # print("here target list : ")
-    #     # print(self.target_can_tracked_by_node)
-    #     # print("here target tracker :")
-    #     # print(self.targetTracker)
-    #     # print(self.local_tree)
-    #     # print("i am done with neighbor")
-    #
-    # # def sort_unassigned_variable_list(unassigned_variable_list ):
+    # def sort_unassigned_variable_list(unassigned_variable_list ):
 
 
 if __name__ == '__main__':
-    ins1 = Sensor([2, 3,4,6], 3, 1)
-    ins1.sense_object(["t2", "t3", "t1"])
-    ins1.target_can_tracked_by_node={1: ['t2', 't3', 't1'], 2: [], 3: ['t2', 't3', 't4'], 4: [], 6: []}
-    ins1.local_tree = {2: [], 4: [], 6: [], 1: ['t2', 't3', 't1'], 3: ['t2', 't3', 't4']}
-    ins1.targetTracker={'t2': [], 't3': [], 't1': [], 't4': []}
-    ins1.compair_neighbor_tree({4: ['t3'], 5: ['t3'], 3: ['t3'], 1: ['t2', 't3', 't1']})
+    ins1 = Sensor([1, 2, 5, 4], 3, 3)
+    ins1.sense_object(["t2", "t4", "t3"])
+    ins1.update_neighbor_status({4: ["t3", "t4"]})
+    ins1.update_neighbor_status({1: ["t2", "t3"]})
+    ins1.update_neighbor_status({2: ["t2", "t1"]})
+    ins1.update_neighbor_status({5: ["t4", "t3"]})
 
+    ins2 = Sensor([3, 2, 6], 3, 1)
+    ins2.sense_object(["t2", "t1", "t3 "])
+    ins2.update_neighbor_status({6: ["t1", "t2"]})
+    ins2.update_neighbor_status({2: ["t1", "t2"]})
+    ins2.update_neighbor_status({3: ["t4", "t2", "t3"]})
 
+    ins3 = Sensor([2, 1], 3, 6)
+    ins3.sense_object(["t2", "t1"])
+    ins3.update_neighbor_status({2: ["t1", "t2"]})
+    ins3.update_neighbor_status({1: ["t1", "t2"]})
 
-    ins1.update_neighbor_status({2: ["t2", "t1", "t3 "]})
-   # # ins1.update_neighbor_status({3: ["t2", "t3", "t4"]})
-   #
-   #  ins2 = Sensor([ 1], 2, 2)
-   #  ins2.sense_object(["t2", "t1", "t3 "])
-   #  #ins2.update_neighbor_status({3: ["t2", "t3", "t4"]})
-   #  ins2.update_neighbor_status({1: ["t2", "t3", "t1"]})
-   #
-   #  # ins3 = Sensor([2, 1], 2, 3)
-   #  # ins3.sense_object(["t2", "t3", "t4"])
-   #  # ins3.update_neighbor_status({2: ["t2", "t1", "t3 "]})
-   #  # ins3.update_neighbor_status({1: ["t2", "t3", "t1"]})
-   #  #
-   #  print("data in sens 1 :: ")
-   #  ins1.create_local_tree()
-   #  result1 = ins1.update_local_tree()
-   #  print(result1)
+    print("data in sens 3 :: ")
+    ins1.create_local_tree()
+    result1 = ins1.update_local_tree()
 
-    # print("data in sens 2 :: ")
-    # ins2.create_local_tree()
-    # result2 = ins2.update_local_tree()
-    #
-    # print("data in sens 3 :: ")
-    # ins3.create_local_tree()
-    # result3 = ins3.update_local_tree()
-    #
-    # print("1 --> 3")
-    # print(ins3.compair_neighbor_tree(result1))
-    # print("1 --> 2")
-    # print(ins2.compair_neighbor_tree(result1))
-    #
-    # print("2 --> 1")
-    # result4 = ins1.compair_neighbor_tree(result2)
-    # print(result4)
-    # print("2 --> 3")
-    # print(ins3.compair_neighbor_tree(result2))
-    #
-    # print("3 --> 2")
-    # result4 = ins2.compair_neighbor_tree(result3)
-    # print(result4)
-    # print("3 --> 1")
-    # print(ins1.compair_neighbor_tree(result3))
-    #
-    # print(ins1.local_tree)
-    # 
-    # print("data in sens 3 :: ")
-    # ins1.create_local_tree()
-    # result1 = ins1.update_local_tree()
-    # 
-    # print("data in sens 1 :: ")
-    # ins2.create_local_tree()
-    # result2 = ins2.update_local_tree()
-    # 
-    # print("data in sens 6 :: ")
-    # ins3.create_local_tree()
-    # result3 = ins3.update_local_tree()
-    # print("3 --> 1")
-    # print(ins2.compair_neighbor_tree(result1))
-    # print("1 --> 3")
-    # print(ins1.compair_neighbor_tree(result2))
-    # print("6 --> 1")
-    # result4 = ins2.compair_neighbor_tree(result3)
-    # print(result4)
-    # print("1 --> 3")
-    # print(ins1.compair_neighbor_tree(result4))
+    print("data in sens 1 :: ")
+    ins2.create_local_tree()
+    result2 = ins2.update_local_tree()
+
+    print("data in sens 6 :: ")
+    ins3.create_local_tree()
+    result3 = ins3.update_local_tree()
+    print("3 --> 1")
+    print(ins2.compair_neighbor_tree(result1))
+    print("1 --> 3")
+    print(ins1.compair_neighbor_tree(result2))
+    print("6 --> 1")
+    result4 = ins2.compair_neighbor_tree(result3)
+    print(result4)
+    print("1 --> 3")
+    print(ins1.compair_neighbor_tree(result4))
+
 
     # ins1.compair_neighbor_tree({1: ['t2'], 2: ['t2'], 6: ['t2'], 3: ["t2", "t4", "t3"]})
