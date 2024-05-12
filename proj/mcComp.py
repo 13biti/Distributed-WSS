@@ -1,6 +1,6 @@
 class Sensor():
     def __init__(self, k: int, sensor_id: 2):
-        self.local_tree = {2: ['t2'], 6: ['t2'], 1: ['t2']}
+        self.local_tree = {}
         self.neighbor = {3: ['t2', 't3', 't4'], 1: ['t2', 't3', 't1'], 6: ['t2', 't1']}
         # self.K = k
         self.target = ['t2', 't1']
@@ -8,12 +8,15 @@ class Sensor():
         # {target : [1 , 2] , }
         self.targetTracked = {}
         # {tracker_id : [target1 , ...]}
-        self.node_tracking_status = {}
+        self.node_tracking_status = {2: ['t2', 't1'], 3: ['t2', 't3', 't4'], 1: ['t2', 't3', 't1'], 6: ['t2', 't1']}
         self.assignment = {}
         self.K = k
         # self.recursive_backtracking(self.assignment)
 
-    def node_status(self, node: int, list_of_target: list):
+
+    def update_node_status(self, node: int, list_of_target: list):
+        print(
+            f"46 some one want to update me like that {node} , {list_of_target} og state : {self.node_tracking_status}")
         self.node_tracking_status[node] = list_of_target
         # for target in list(self.target_can_tracked_by_node.values())[0]:
         #     print(target)
@@ -66,12 +69,12 @@ class Sensor():
         # > also should check if other can tolk with this tracker or not !
         domain_list = []
         for target in self.node_tracking_status.get(tracker):
-            if len(targetTracked.get(target)) < k:
-                # if its can complit it self in future !
-                if (k - len(targetTracked.get(target))) <= self.candidates_to_track(target, assignment,
-                                                                                    targetTracked):
-                    if tracker not in targetTracked.get(target):
-                        domain_list.append(target)
+            if target in list(targetTracked.keys()) :
+                if len(targetTracked.get(target)) < k:
+                    # if its can complit it self in future !
+                    if (k - len(targetTracked.get(target))) <= self.candidates_to_track(target, assignment, targetTracked):
+                        if tracker not in targetTracked.get(target):
+                            domain_list.append(target)
 
         if len(domain_list) != 0:
             print("final domain back ", domain_list)
@@ -85,7 +88,7 @@ class Sensor():
             self.targetTracked[target] = []
 
     def recursive_backtracking(self, assignment, target_tracker):
-        if len(list(self.assignment.keys())) == len(list(self.node_tracking_status.keys())):
+        if len(list(assignment.keys())) == len(list(self.node_tracking_status.keys())):
             return assignment, target_tracker
         for Node in self.unassigned_Node(assignment, target_tracker):
             domain = self.domain_values(Node, self.K, target_tracker, assignment)
@@ -107,12 +110,6 @@ class Sensor():
                             return result
                         assignment[Node].remove(value)
             return False
-
-
-        # self.messenger = MessageManager()
-
-        # create dictionary of neighbor , each has a list
-        # that specifies the status of its own targets
     def compair_neighbor_tree(self, tree: dict):
         if len(list(self.local_tree.keys())) < len(list(tree.keys())):
             return False
@@ -171,7 +168,44 @@ class Sensor():
             return False
         else:
             return True
+    def update_local_tree(self, assignment=None):
+        # this function only get called when something get chaange in neighbor status !
+        # so i have neighbor status , i will use it to create tree , after that i will compair that tree with og one ,
+        # if its better then we have new tree ,
+        print(f"00 {self.name} i want to update!")
+        psudo_target_tracked = {}
+        psudo_assignment = {}
+        # for node in list(self.neighbor.keys()):
+        #     psudo_assignment.setdefault(node, [])
+        # psudo_assignment.setdefault(self.name , [])
 
-inst = Sensor(3,2)
-inst.compair_neighbor_tree( {2: ['X'], 1: ['X'], 4: ['X'], 5: ['X'], 3: ['X']})
+        for target in self.target:
+            psudo_target_tracked.setdefault(target, [])
+        print(f"00 {self.name}i want to back with {psudo_assignment} , {psudo_target_tracked} and {self.node_tracking_status}")
+        result = self.recursive_backtracking(psudo_assignment, psudo_target_tracked)
+        if result :
+            psudo_tree, psudo_target_tracked = result
+        else:
+            return False
+        # now we have new tree , which is can be  better or not , so lets comp!
+        print(f"00 {self.name} i want to comp with {psudo_tree} , {self.local_tree}")
+        if self.is_haveBetter_tree(self.local_tree, psudo_tree):
+            for node in list(psudo_tree.keys()):
+                if not psudo_tree.get(node):
+                    self.update_node_status(node, [])
+                    psudo_assignment[node] = ["X"]
+                else:
+                    # print(f"43 going to update node status like this in ct {node,  psudo_tree} more info ")
+                    self.update_node_status(node, psudo_tree.get(node))
+                    psudo_assignment[node] = psudo_tree.get(node)
+            self.assignment = psudo_tree
+            self.local_tree = psudo_tree
+            return True
+        return False
+
+
+inst = Sensor(3, 2)
+inst.update_local_tree()
+inst.compair_neighbor_tree({2: ['X'], 1: ['X'], 4: ['X'], 5: ['X'], 3: ['X']})
+
 

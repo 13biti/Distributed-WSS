@@ -139,7 +139,7 @@ class BackTracking:
 #         self.useless_target = []
 #         # self.recursive_backtracking(self.assignment)
 #
-#     def node_status(self, node: int, list_of_target: list):
+#     def update_node_status(self, node: int, list_of_target: list):
 #         self.target_can_tracked_by_node[node] = list_of_target
 #         # for target in list(self.target_can_tracked_by_node.values())[0]:
 #         #     print(target)
@@ -413,9 +413,9 @@ class Sensor(BackTracking):
         return self.assignment
 
     # def update_local_tree(self):
-    #     self.node_status(self.name, self.target)
+    #     self.update_node_status(self.name, self.target)
     #     for node in list(self.neighbor.keys()):
-    #         self.node_status(node, self.neighbor.get(node))
+    #         self.update_node_status(node, self.neighbor.get(node))
     #
     #     result = self.recursive_backtracking(self.assignment)
     #     for sensor in list(self.assignment.keys()):
