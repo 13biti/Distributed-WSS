@@ -554,6 +554,9 @@ class Sensor(BackTracking):
         # # now lets take care of equality , this is the hard part , in this section , i will create new tree base on
         # # sujested information , then i will compair thouse two tree ,
         # elif len(list(self.local_tree.keys())) == len(list(tree.keys())):
+        if tree == {}:
+            return False
+
         psudo_target_tracked = {}
         psudo_assignment = {}
         common_Node = set(self.local_tree.keys()) & set(tree.keys())
@@ -572,8 +575,9 @@ class Sensor(BackTracking):
         if self.is_haveBetter_tree(self.local_tree, psudo_tree):
             print(f"78 soemthing is better iam {self.name} between {self.local_tree} and {psudo_tree} ")
             for node in list(psudo_tree.keys()):
-                if psudo_tree.get(node) == 'X':
-                    self.update_node_status(node, [])
+                if not psudo_tree.get(node):
+                    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@you may want to chage this  from [] to "X"!
+                    self.update_node_status(node, self.neighbor.get(node))
                     psudo_assignment.setdefault(node ,self.neighbor.get(node))
                 else:
                     print(f"43 going to update node status like this in ct {node,  psudo_tree} more info : {self.name , tree}")

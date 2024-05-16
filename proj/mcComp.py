@@ -87,6 +87,7 @@ class Sensor():
         for target in list(self.targetTracked.keys()):
             self.targetTracked[target] = []
 
+
     def recursive_backtracking(self, assignment, target_tracker):
         if len(list(assignment.keys())) == len(list(self.node_tracking_status.keys())):
             return assignment, target_tracker
@@ -110,37 +111,59 @@ class Sensor():
                             return result
                         assignment[Node].remove(value)
             return False
-    def compair_neighbor_tree(self, tree: dict):
-        if len(list(self.local_tree.keys())) < len(list(tree.keys())):
-            return False
-        # if len of my tree is bigger , so i am lose !
-        elif len(list(self.local_tree.keys())) > len(list(tree.keys())):
-            for node in list(tree.keys()):
-                self.node_status(node, tree.get(node))
-            self.reset_backtracking()
-            self.update_local_tree()
-            return True
-        # now lets take care of equality , this is the hard part , in this section , i will create new tree base on
-        # sujested information , then i will compair thouse two tree ,
-        elif len(list(self.local_tree.keys())) == len(list(tree.keys())):
-            psudo_assignment = {}
-            psudo_targetTracked = {}
-            common_Node = set(self.local_tree.keys()) & set(tree.keys())
-            for node in list(self.local_tree.keys()):
-                psudo_assignment.setdefault(node, [])
-                if node in common_Node:
-                    psudo_assignment[node].append(tree.get(node))
-            for target in self.target:
-                psudo_targetTracked.setdefault(target, [])
-                for node in list(tree.keys()):
-                    if target in tree.values(node):
-                        psudo_targetTracked[target].append(node)
-            psudo_tree, psudo_targetTracked = self.recursive_backtracking(psudo_assignment, psudo_targetTracked)
-            if self.is_haveBetter_tree(self.local_tree, psudo_tree):
-                print("its better !")
-            else:
-                print("hory fuck it ! ")
 
+    def compair_neighbor_tree(self, tree: dict):
+        # in this new compair fucntion , first i want to check if the sujjested tree is smaller of not , if it is , i will prifer it , if not
+        # i will check them in my new is_better function , which will check the both tree base on creating new tree with sujested one ,
+        # the tree which that free frindlear nood , will win , i will complite this note
+        # ------------------------------------------------------
+        # my tree is better !
+        # print("iam in comp ! ------------------------------")
+        # if len(list(self.local_tree.keys())) < len(list(tree.keys())):
+        #     return False
+        # # if len of my tree is bigger , so i am lose !
+        # elif len(list(self.local_tree.keys())) > len(list(tree.keys())):
+        #     for node in list(tree.keys()):
+        #         self.update_node_status(node, tree.get(node))
+        #     self.reset_backtracking()
+        #     self.update_local_tree()
+        #     return True
+        # # now lets take care of equality , this is the hard part , in this section , i will create new tree base on
+        # # sujested information , then i will compair thouse two tree ,
+        # elif len(list(self.local_tree.keys())) == len(list(tree.keys())):
+        psudo_target_tracked = {}
+        psudo_assignment = {}
+        common_Node = set(self.local_tree.keys()) & set(tree.keys())
+        for node in list(self.local_tree.keys()):
+            psudo_assignment.setdefault(node, [])
+            if node in common_Node:
+                psudo_assignment[node] = tree.get(node)
+        for target in self.target:
+            psudo_target_tracked.setdefault(target, [])
+            for node in list(tree.keys()):
+                if target in tree.get(node):
+                    psudo_target_tracked[target].append(node)
+        print(
+            f"98iam {self.name} recive tree from {-1} lets got to isbe ! with psudos : {psudo_assignment} and {psudo_target_tracked} and here recived tree {tree}")
+        psudo_tree, psudo_target_tracked = self.recursive_backtracking(psudo_assignment, psudo_target_tracked)
+        print(
+            f"99iam {self.name} recive tree from {-1} lets got to isbe ! with psudos : {psudo_tree} and {psudo_target_tracked} and here is my tree {self.local_tree} ")
+        if self.is_haveBetter_tree(self.local_tree, psudo_tree):
+            print(f"78 soemthing is better iam {self.name} between {self.local_tree} and {psudo_tree} ")
+            for node in list(psudo_tree.keys()):
+                if psudo_tree.get(node) == 'X':
+                    self.update_node_status(node, [])
+                    psudo_assignment.setdefault(node, self.neighbor.get(node))
+                else:
+                    print(
+                        f"43 going to update node status like this in ct {node, psudo_tree} more info : {self.name, tree}")
+                    self.update_node_status(node, psudo_tree.get(node))
+                    psudo_assignment.setdefault(node, psudo_tree.get(node))
+            self.reset_backtracking()
+            self.local_tree = psudo_assignment
+            return True
+        else:
+            return False
 
     def is_haveBetter_tree(self, local_tree, psudo_tree):
         friendly_score = {}
@@ -164,7 +187,7 @@ class Sensor():
                     psudo_tree_score += friendly_score.get(node)
             else:
                 pass
-        if local_tree_score > psudo_tree_score :
+        if local_tree_score > psudo_tree_score:
             return False
         else:
             return True
@@ -206,6 +229,6 @@ class Sensor():
 
 inst = Sensor(3, 2)
 inst.update_local_tree()
-inst.compair_neighbor_tree({2: ['X'], 1: ['X'], 4: ['X'], 5: ['X'], 3: ['X']})
+inst.compair_neighbor_tree({2: [], 1: [], 4: [], 5: [], 3: []})
 
 
