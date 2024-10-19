@@ -10,7 +10,7 @@ DWS_Development_Environment/
 .ropeproject/
 
 # Ignore log files
-*.log
+./*/*.log
 
 # Ignore old and backup files
 OldStuff/
