@@ -1,0 +1,210 @@
+------receiver of 5 is running-------- 
+Got connection from ('127.0.0.1', 38828)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 38844)
+Received message from client: {4: [['t3', 't4'], {}]}
+Got connection from ('127.0.0.1', 38858)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 38870)
+Received message from client: {3: [['t2', 't3', 't4'], {}]}
+------receiver of 4 is running-------- 
+Got connection from ('127.0.0.1', 60094)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 60098)
+Received message from client: {5: [['t3', 't4'], {}]}
+Got connection from ('127.0.0.1', 60110)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 60116)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 60124)
+Received message from client: {1: [['t2', 't3', 't1'], {}]}
+Got connection from ('127.0.0.1', 60134)
+Received message from client: {3: [['t2', 't3', 't4'], {}]}
+------receiver of 2 is running-------- 
+Got connection from ('127.0.0.1', 40796)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 40802)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 40806)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 40822)
+Received message from client: {1: [['t2', 't3', 't1'], {}]}
+Got connection from ('127.0.0.1', 40828)
+Received message from client: {6: [['t2', 't1'], {}]}
+Got connection from ('127.0.0.1', 40836)
+Received message from client: {3: [['t2', 't3', 't4'], {}]}
+------receiver of 6 is running-------- 
+Got connection from ('127.0.0.1', 45624)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 45634)
+Received message from client: {1: [['t2', 't3', 't1'], {}]}
+Got connection from ('127.0.0.1', 45636)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 45650)
+Received message from client: {2: [['t2', 't1'], {}]}
+------receiver of 1 is running-------- 
+Got connection from ('127.0.0.1', 41764)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 41770)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 41776)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 41784)
+Received message from client: {6: [['t2', 't1'], {}]}
+Got connection from ('127.0.0.1', 41798)
+Received message from client: {4: [['t3', 't4'], {}]}
+Got connection from ('127.0.0.1', 41804)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 41806)
+Received message from client: {3: [['t2', 't3', 't4'], {}]}
+Got connection from ('127.0.0.1', 41820)
+Received message from client: {2: [['t2', 't1'], {}]}
+------receiver of 3 is running-------- 
+Got connection from ('127.0.0.1', 48186)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 48194)
+Received message from client: {5: [['t3', 't4'], {}]}
+Got connection from ('127.0.0.1', 48208)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 48218)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 48234)
+U************ fucking zero detected ! 
+Received message from client: {}
+Got connection from ('127.0.0.1', 48238)
+Received message from client: {4: [['t3', 't4'], {}]}
+Got connection from ('127.0.0.1', 48250)
+Received message from client: {1: [['t2', 't3', 't1'], {}]}
+Got connection from ('127.0.0.1', 48260)
+Received message from client: {2: [['t2', 't1'], {}]}
+sender send message :  {0: [[], {}]}
+Connection refused. Retrying in 1 second...
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+4 send to---> 5
+ 4 say: i am sending :  {4: [['t3', 't4'], {}]}
+sender send message :  {4: [['t3', 't4'], {}]}
+4 send to---> 3
+ 4 say: i am sending :  {4: [['t3', 't4'], {}]}
+sender send message :  {4: [['t3', 't4'], {}]}
+4 send to---> 1
+ 4 say: i am sending :  {4: [['t3', 't4'], {}]}
+sender send message :  {4: [['t3', 't4'], {}]}
+A6 recive somehting this is how message loook like ! (3, [['t2', 't3', 't4'], {}])
+A6 + 4 here is my neighbor_status after update : {5: [], 3: ['t2', 't3', 't4'], 1: []}
+A6 recive somehting this is how message loook like ! (1, [['t2', 't3', 't1'], {}])
+A6 + 4 here is my neighbor_status after update : {5: [], 3: ['t2', 't3', 't4'], 1: ['t2', 't3', 't1']}
+A6 recive somehting this is how message loook like ! (5, [['t3', 't4'], {}])
+A6 + 4 here is my neighbor_status after update : {5: ['t3', 't4'], 3: ['t2', 't3', 't4'], 1: ['t2', 't3', 't1']}
+Connection refused. Retrying in 1 second...
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+5 send to---> 3
+ 5 say: i am sending :  {5: [['t3', 't4'], {}]}
+sender send message :  {5: [['t3', 't4'], {}]}
+5 send to---> 4
+ 5 say: i am sending :  {5: [['t3', 't4'], {}]}
+sender send message :  {5: [['t3', 't4'], {}]}
+A6 recive somehting this is how message loook like ! (4, [['t3', 't4'], {}])
+A6 + 5 here is my neighbor_status after update : {3: [], 4: ['t3', 't4']}
+A6 recive somehting this is how message loook like ! (3, [['t2', 't3', 't4'], {}])
+A6 + 5 here is my neighbor_status after update : {3: ['t2', 't3', 't4'], 4: ['t3', 't4']}
+Connection refused. Retrying in 1 second...
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+1 send to---> 2
+ 1 say: i am sending :  {1: [['t2', 't3', 't1'], {}]}
+sender send message :  {1: [['t2', 't3', 't1'], {}]}
+1 send to---> 3
+ 1 say: i am sending :  {1: [['t2', 't3', 't1'], {}]}
+sender send message :  {1: [['t2', 't3', 't1'], {}]}
+1 send to---> 4
+ 1 say: i am sending :  {1: [['t2', 't3', 't1'], {}]}
+sender send message :  {1: [['t2', 't3', 't1'], {}]}
+1 send to---> 6
+ 1 say: i am sending :  {1: [['t2', 't3', 't1'], {}]}
+sender send message :  {1: [['t2', 't3', 't1'], {}]}
+A6 recive somehting this is how message loook like ! (4, [['t3', 't4'], {}])
+A6 + 1 here is my neighbor_status after update : {2: [], 3: [], 4: ['t3', 't4'], 6: []}
+A6 recive somehting this is how message loook like ! (3, [['t2', 't3', 't4'], {}])
+A6 + 1 here is my neighbor_status after update : {2: [], 3: ['t2', 't3', 't4'], 4: ['t3', 't4'], 6: []}
+A6 recive somehting this is how message loook like ! (2, [['t2', 't1'], {}])
+A6 + 1 here is my neighbor_status after update : {2: ['t2', 't1'], 3: ['t2', 't3', 't4'], 4: ['t3', 't4'], 6: []}
+A6 recive somehting this is how message loook like ! (6, [['t2', 't1'], {}])
+A6 + 1 here is my neighbor_status after update : {2: ['t2', 't1'], 3: ['t2', 't3', 't4'], 4: ['t3', 't4'], 6: ['t2', 't1']}
+Connection refused. Retrying in 1 second...
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+2 send to---> 3
+ 2 say: i am sending :  {2: [['t2', 't1'], {}]}
+sender send message :  {2: [['t2', 't1'], {}]}
+2 send to---> 1
+ 2 say: i am sending :  {2: [['t2', 't1'], {}]}
+sender send message :  {2: [['t2', 't1'], {}]}
+2 send to---> 6
+ 2 say: i am sending :  {2: [['t2', 't1'], {}]}
+sender send message :  {2: [['t2', 't1'], {}]}
+A6 recive somehting this is how message loook like ! (3, [['t2', 't3', 't4'], {}])
+A6 + 2 here is my neighbor_status after update : {3: ['t2', 't3', 't4'], 1: [], 6: []}
+A6 recive somehting this is how message loook like ! (6, [['t2', 't1'], {}])
+A6 + 2 here is my neighbor_status after update : {3: ['t2', 't3', 't4'], 1: [], 6: ['t2', 't1']}
+A6 recive somehting this is how message loook like ! (1, [['t2', 't3', 't1'], {}])
+A6 + 2 here is my neighbor_status after update : {3: ['t2', 't3', 't4'], 1: ['t2', 't3', 't1'], 6: ['t2', 't1']}
+Connection refused. Retrying in 1 second...
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+3 send to---> 2
+ 3 say: i am sending :  {3: [['t2', 't3', 't4'], {}]}
+sender send message :  {3: [['t2', 't3', 't4'], {}]}
+3 send to---> 1
+ 3 say: i am sending :  {3: [['t2', 't3', 't4'], {}]}
+sender send message :  {3: [['t2', 't3', 't4'], {}]}
+3 send to---> 4
+ 3 say: i am sending :  {3: [['t2', 't3', 't4'], {}]}
+sender send message :  {3: [['t2', 't3', 't4'], {}]}
+3 send to---> 5
+ 3 say: i am sending :  {3: [['t2', 't3', 't4'], {}]}
+sender send message :  {3: [['t2', 't3', 't4'], {}]}
+A6 recive somehting this is how message loook like ! (2, [['t2', 't1'], {}])
+A6 + 3 here is my neighbor_status after update : {2: ['t2', 't1'], 1: [], 4: [], 5: []}
+A6 recive somehting this is how message loook like ! (1, [['t2', 't3', 't1'], {}])
+A6 + 3 here is my neighbor_status after update : {2: ['t2', 't1'], 1: ['t2', 't3', 't1'], 4: [], 5: []}
+A6 recive somehting this is how message loook like ! (4, [['t3', 't4'], {}])
+A6 + 3 here is my neighbor_status after update : {2: ['t2', 't1'], 1: ['t2', 't3', 't1'], 4: ['t3', 't4'], 5: []}
+A6 recive somehting this is how message loook like ! (5, [['t3', 't4'], {}])
+A6 + 3 here is my neighbor_status after update : {2: ['t2', 't1'], 1: ['t2', 't3', 't1'], 4: ['t3', 't4'], 5: ['t3', 't4']}
+Connection refused. Retrying in 1 second...
+sender send message :  {0: [[], {}]}
+sender send message :  {0: [[], {}]}
+6 send to---> 1
+ 6 say: i am sending :  {6: [['t2', 't1'], {}]}
+sender send message :  {6: [['t2', 't1'], {}]}
+6 send to---> 2
+ 6 say: i am sending :  {6: [['t2', 't1'], {}]}
+sender send message :  {6: [['t2', 't1'], {}]}
+A6 recive somehting this is how message loook like ! (1, [['t2', 't3', 't1'], {}])
+A6 + 6 here is my neighbor_status after update : {1: ['t2', 't3', 't1'], 2: []}
+A6 recive somehting this is how message loook like ! (2, [['t2', 't1'], {}])
+A6 + 6 here is my neighbor_status after update : {1: ['t2', 't3', 't1'], 2: ['t2', 't1']}
