@@ -1,0 +1,20 @@
+
+# Ignore Python compiled files
+__pycache__/
+*.py[cod]
+
+# Ignore environment files
+.env/
+venv/
+DWS_Development_Environment/
+.ropeproject/
+
+# Ignore log files
+*.log
+
+# Ignore old and backup files
+OldStuff/
+*.old
+
+# Ignore OS-specific files
+.DS_Store
