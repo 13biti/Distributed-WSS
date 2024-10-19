@@ -10,7 +10,11 @@ DWS_Development_Environment/
 .ropeproject/
 
 # Ignore log files
-./*/*.log
+*.log
+# Inside .gitignore
+proj/log
+*.log
+
 
 # Ignore old and backup files
 OldStuff/
