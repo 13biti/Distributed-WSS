@@ -176,6 +176,12 @@ class Sensor(BackTracking):
         if counter != self.K - 1:
             print("target cannot get tracked")
             return False
+    def update_node_tracking_status(self):
+        node_tracking_status = {}
+        for node in self.neighbor:
+            node_tracking_status.setdefault(node,self.neighbor.get(node))
+            node_tracking_status.setdefault(self.name,self.target)
+        return node_tracking_status
 
     def update_local_tree(self, assignment=None):
         # this function only get called when something get chaange in neighbor status !
@@ -187,10 +193,14 @@ class Sensor(BackTracking):
         # for node in list(self.neighbor.keys()):
         #     psudo_assignment.setdefault(node, [])
         # psudo_assignment.setdefault(self.name , [])
+        #
+        # for target in self.target:
+        #     psudo_target_tracked.setdefault(target, [])
+        # this code is just for now , in future you should change it ! , first create instawnce of backtracking , then ,
+        # insert them in there not in here !!
+        self.node_tracking_status = self.update_node_tracking_status()
 
-        for target in self.target:
-            psudo_target_tracked.setdefault(target, [])
-        print(f"00 {self.name}i want to back with {psudo_assignment} , {psudo_target_tracked} and {self.node_tracking_status}")
+        print(f"00 {self.name}i want to back with {psudo_assignment},{psudo_target_tracked} and {self.node_tracking_status}")
         result = self.recursive_backtracking(psudo_assignment, psudo_target_tracked)
         if result :
             print(f"A01 holy crap {self.name} , here is result funck it {result}")

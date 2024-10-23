@@ -78,6 +78,7 @@ class BackTracking:
     # this is poor implimentation , so
     # when use it , you can create 2 instance and use them as you wish !
     def recursive_backtracking(self, assignment, target_tracker):
+        print(f"A44 i am here to backtrack by {self.node_tracking_status} and here is ass {assignment} and target_tracker {target_tracker} ")
         if len(target_tracker) == 0:
             target_tracker = self.targetTracked
 

@@ -4,31 +4,36 @@ import unittest
 class TestBackTracking(unittest.TestCase):
     def setUp(self):
         # Initialize a BackTracking object with K value for testing
-        self.k_value = 2
+        self.k_value = 3
         self.bt = BackTracking(self.k_value)
     
     def test_recursive_backtracking(self):
         # Test Case 1: Simple node tracking assignment
-        self.bt.update_node_status(1, [100])
-        self.bt.update_node_status(2, [100, 101])
-        self.bt.update_node_status(3, [101])
-        self.bt.update_node_status(4, [102])
+        self.bt.update_node_status(1, ['t2', 't3', 't1'])
+        self.bt.update_node_status(2, ['t2', 't1'])
+        self.bt.update_node_status(3, ['t2', 't3', 't4'])
+        self.bt.update_node_status(4, ['t3', 't4'])
+        self.bt.update_node_status(5, ['t3', 't4'])
+
 
         assignment = {}
         target_tracker = {}
 
         # Expected result depends on backtracking behavior.
         expected_assignment = {
-            1: [100],
-            2: [101],
-            3: [101],
-            4: [102]
+            1: ['t2', 't3', 't1'],
+            2: ['t2', 't1'],
+            3: ['t2', 't3', 't4'],
+            4: ['t3', 't4'],
+            5: ['t3', 't4']
         }
         expected_target_tracker = {
-            100: [1],
-            101: [2, 3],
-            102: [4]
+            't2': [1, 2, 3],
+            't3': [1, 4, 5],
+            't4': [4, 5],
+            't1': [1]
         }
+
 
         result_assignment, result_target_tracker = self.bt.recursive_backtracking(assignment, target_tracker)
         print(f"Assignment: {result_assignment}")
