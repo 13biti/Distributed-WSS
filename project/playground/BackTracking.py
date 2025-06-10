@@ -27,13 +27,26 @@ class BackTracking:
     def unassigned_Node(self, assignment, targetTracked):
         unassigned_Node_list = []
         for element in self.node_tracking_status.keys():
-            if element not in list(targetTracked.values()) and element not in list(assignment.keys()):
+            if element not in list(targetTracked.values()) and element not in list(
+                assignment.keys()
+            ):
                 unassigned_Node_list.append(element)
 
-        unassigned_Node_list.sort(reverse=False, key=lambda item: len(
-            [tar for tar in self.node_tracking_status.get(item, []) if
-             tar not in [useless for useless in self.targetTracked.keys() if
-                         len(targetTracked.get(useless, [])) == self.K]]))
+        unassigned_Node_list.sort(
+            reverse=False,
+            key=lambda item: len(
+                [
+                    tar
+                    for tar in self.node_tracking_status.get(item, [])
+                    if tar
+                    not in [
+                        useless
+                        for useless in self.targetTracked.keys()
+                        if len(targetTracked.get(useless, [])) == self.K
+                    ]
+                ]
+            ),
+        )
         # unassigned_Node_list.sort(reverse=False, key=lambda item: len(self.domain_values2(item, self.K)))
         #  len([tar for tar in self.target_can_tracked_by_node.get(item, []) if tar not in assignment.get(item, [])]))
         return unassigned_Node_list
@@ -63,22 +76,28 @@ class BackTracking:
         for target in self.node_tracking_status.get(tracker):
             if target in list(targetTracked.keys()):
                 if len(targetTracked.get(target)) < k:
-                    if (k - len(targetTracked.get(target))) <= self.candidates_to_track(target, assignment, targetTracked):
-                            domain_list.append(target)
+                    if (k - len(targetTracked.get(target))) <= self.candidates_to_track(
+                        target, assignment, targetTracked
+                    ):
+                        domain_list.append(target)
 
-        domain_list.sort(reverse=True, key=lambda item: len(self.targetTracked.get(item, [])))
+        domain_list.sort(
+            reverse=True, key=lambda item: len(self.targetTracked.get(item, []))
+        )
         return domain_list
 
     def reset_backtracking(self):
         for target in list(self.targetTracked.keys()):
             self.targetTracked[target] = []
 
-    #this method can call in 2 ways , if you have target_tracker list , send it and itw work , if not
+    # this method can call in 2 ways , if you have target_tracker list , send it and itw work , if not
     # it will use it own list , this is good when i dont want to use its default constractor value , but
     # this is poor implimentation , so
     # when use it , you can create 2 instance and use them as you wish !
     def recursive_backtracking(self, assignment, target_tracker):
-        print(f"A44 i am here to backtrack by {self.node_tracking_status} and here is ass {assignment} and target_tracker {target_tracker} ")
+        print(
+            f"A44 i am here to backtrack by {self.node_tracking_status} and here is ass {assignment} and target_tracker {target_tracker} "
+        )
         if len(target_tracker) == 0:
             target_tracker = self.targetTracked
 
